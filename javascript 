@@ -1,0 +1,38 @@
+// --- Function to fetch prediction from AI Backend ---
+async function getChurnPrediction() {
+    const customerData = {
+        tenure: parseInt(document.getElementById('in-tenure').value),
+        charges: parseFloat(document.getElementById('in-charges').value),
+        balance: parseFloat(document.getElementById('in-balance').value),
+        support_calls: parseInt(document.getElementById('in-calls').value)
+    };
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(customerData)
+        });
+        
+        const result = await response.json();
+        updateDashboard(result.churn_risk, result.status);
+    } catch (error) {
+        console.error("AI Backend not reached. Ensure main.py is running!", error);
+        // Mock update for demo purposes if backend isn't live
+        updateDashboard(Math.random() * 100, "Demo Mode");
+    }
+}
+
+// --- Function to update Charts based on AI Result ---
+function updateDashboard(riskScore, status) {
+    // Update the Stat Cards
+    document.getElementById('risk-value').innerText = riskScore.toFixed(1) + "%";
+    
+    // Update the Donut Chart
+    riskDonutChart.data.datasets[0].data = [riskScore, 100 - riskScore];
+    riskDonutChart.data.datasets[0].backgroundColor = [
+        riskScore > 50 ? '#f43f5e' : '#10b981', // Red if high risk, Green if low
+        '#f1f5f9'
+    ];
+    riskDonutChart.update();
+}
