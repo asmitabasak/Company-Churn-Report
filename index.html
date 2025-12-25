@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Churn Predictor | Enterprise Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .stat-card { transition: transform 0.2s ease; }
+        .stat-card:hover { transform: translateY(-4px); }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-7xl mx-auto">
+        <header class="flex justify-between items-end mb-8">
+            <div>
+                <h1 class="text-3xl font-extrabold text-slate-900 tracking-tight">Dashboard</h1>
+                <p class="text-slate-500">Overview of customer retention and risk analysis.</p>
+            </div>
+            <div class="bg-white border border-slate-200 px-4 py-2 rounded-xl shadow-sm text-right">
+                <p class="text-[10px] font-black text-slate-400 uppercase">Last Updated</p>
+                <p class="text-sm font-bold text-slate-700">25/12/2025</p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <div class="lg:col-span-4 space-y-6">
+                <div class="stat-card bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-500 text-sm font-semibold">Total Customers</p>
+                        <h2 class="text-4xl font-black text-slate-900 mt-1">3</h2>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded-2xl text-blue-600"><i class="fa-solid fa-users text-xl"></i></div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-500 text-sm font-semibold">High Risk Customers</p>
+                        <h2 class="text-4xl font-black text-slate-900 mt-1">0</h2>
+                        <p class="text-rose-500 text-xs font-bold mt-2 flex items-center gap-1">
+                            <i class="fa-solid fa-arrow-trend-down"></i> Stable
+                        </p>
+                    </div>
+                    <div class="bg-rose-50 p-3 rounded-2xl text-rose-600"><i class="fa-solid fa-triangle-exclamation text-xl"></i></div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-500 text-sm font-semibold">Avg. Risk Score</p>
+                        <h2 class="text-4xl font-black text-slate-900 mt-1">0%</h2>
+                    </div>
+                    <div class="bg-purple-50 p-3 rounded-2xl text-purple-600"><i class="fa-solid fa-chart-line text-xl"></i></div>
+                </div>
+
+                <div class="stat-card bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex justify-between items-start">
+                    <div>
+                        <p class="text-slate-500 text-sm font-semibold">Total Balance</p>
+                        <h2 class="text-4xl font-black text-slate-900 mt-1">$0.2M</h2>
+                    </div>
+                    <div class="bg-emerald-50 p-3 rounded-2xl text-emerald-600"><i class="fa-solid fa-dollar-sign text-xl"></i></div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-8 space-y-8">
+                
+                <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                    <h3 class="text-xl font-bold text-slate-800 mb-8">Risk Distribution</h3>
+                    <div class="w-full h-[300px] flex justify-center relative">
+                        <canvas id="riskChart"></canvas>
+                        <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none pt-4">
+                            <p class="text-emerald-500 text-2xl font-black leading-none">Low Risk</p>
+                            <p class="text-slate-400 text-sm font-bold">Category</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-8 rounded-[2rem] shadow-sm border border-slate-100">
+                    <h3 class="text-xl font-bold text-slate-800 mb-8">Average Risk by Tenure</h3>
+                    <div class="w-full h-[250px]">
+                        <canvas id="tenureChart"></canvas>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Risk Distribution Chart ---
+        const riskCtx = document.getElementById('riskChart').getContext('2d');
+        new Chart(riskCtx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Low Risk', 'Unknown'],
+                datasets: [{
+                    data: [60, 40],
+                    backgroundColor: ['#10b981', '#f1f5f9'],
+                    borderWidth: 0,
+                    hoverOffset: 4
+                }]
+            },
+            options: {
+                cutout: '80%',
+                plugins: {
+                    legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                }
+            }
+        });
+
+        // --- Tenure Bar Chart ---
+        const tenureCtx = document.getElementById('tenureChart').getContext('2d');
+        new Chart(tenureCtx, {
+            type: 'bar',
+            data: {
+                labels: ['0-12m', '13-24m', '25-48m', '48m+'],
+                datasets: [{
+                    label: 'Avg Risk',
+                    data: [4, 0, 0, 0], // Based on screenshot value
+                    backgroundColor: '#e2e8f0',
+                    borderRadius: 8,
+                    barThickness: 60
+                }]
+            },
+            options: {
+                scales: {
+                    y: { beginAtZero: true, grid: { display: false }, ticks: { stepSize: 1 } },
+                    x: { grid: { display: false } }
+                },
+                plugins: { legend: { display: false } }
+            }
+        });
+    </script>
+</body>
+</html>
